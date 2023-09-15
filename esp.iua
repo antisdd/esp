@@ -1,0 +1,38 @@
+-- Oyuncu etiketlerini görünür hale getirme fonksiyonu
+local function enablePlayerESP(player)
+    player.CharacterAdded:Connect(function(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.Died:Connect(function()
+            -- Oyuncu öldüğünde etiketi kaldırın
+            local espLine = character:FindFirstChild("ESPLine")
+            if espLine then
+                espLine:Destroy()
+            end
+        end)
+
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+        local espLine = rootPart:FindFirstChild("ESPLine")
+        if not espLine then
+            espLine = Instance.new("LineHandleAdornment")
+            espLine.Name = "ESPLine"
+            espLine.From = rootPart.Position
+            espLine.To = rootPart.Position + Vector3.new(0, 5, 0) -- Etiketin boyutu
+            espLine.Adornee = rootPart
+            espLine.AlwaysOnTop = true
+            espLine.Transparency = 0.5 -- Etiketin saydamlığı
+            espLine.Color3 = Color3.new(1, 0, 0) -- Etiketin rengi (örnek: kırmızı)
+            espLine.ZIndex = 5 -- Etiketin diğer nesnelerin üzerine gelmesi
+            espLine.Parent = rootPart
+        end
+    end)
+end
+
+-- Oyuncu katılma işlemi
+game.Players.PlayerAdded:Connect(function(player)
+    enablePlayerESP(player)
+end)
+
+-- Mevcut oyuncuları işleme al
+for _, player in ipairs(game.Players:GetPlayers()) do
+    enablePlayerESP(player)
+end
